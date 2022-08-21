@@ -1,0 +1,123 @@
+﻿@page "/"
+
+<PageTitle>Reviews</PageTitle>
+
+
+
+@using Entities
+@inject IRepository _repository
+
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Reviewer</th>
+            <th>Rating</th>
+            <th>Headline</th>
+            <th>Movie</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (_reviews == null || _reviews.Count == 0)
+        {
+            <tr>
+
+                <td colspan="5" style="text-align: center; vertical-align: middle;"><h4>There are no reviews to display</h4></td>
+        
+         
+            </tr>
+                
+            
+          
+        }
+        else
+        {
+            @foreach (var review in _reviews)
+                    {
+                        <tr>
+                            <td>@review.ReviewerName</td>
+                            <td>@review.Rating</td>
+                            <td>@review.Headline</td>
+                            <td>@review.Movie.Title</td>
+                            <th><button onclick="@(() => RemoveReview(review.Id))">Delete</button></th>
+                        </tr>
+                    }
+        }
+        
+        </tbody>
+        <tr>
+        
+                        <td colspan="5" style="text-align: center; vertical-align: middle;"><h4>Add a new review:</h4></td>
+                
+                 
+                    </tr>
+        <tbody>
+        <tr>
+            <td><input placeholder="Name of reviewer" @bind="ReviwerName"/></td>
+            <td><input type="number" placeholder="1-5" @bind="Rating"/></td>
+            <td><input placeholder="Captivating headline" @bind="Headline"/></td>
+            <td>
+                @if (_movies == null || new List<Movie>(_movies).Count == 0)
+                                {
+                                    <p>Add a movie first</p>
+                                }
+                else
+                {
+                    <select @bind="MovieId">
+                    
+                                        @foreach (var movie in _movies)
+                                        {
+                                            <option value="@movie.Id">@movie.Title</option>
+                                        }
+                                    </select>
+                }
+                
+            </td>
+            <td><button onclick="@(() => AddReview())">Add</button></td>
+        </tr>
+        </tbody>
+    </table>
+
+
+@code {
+    private List<Review> _reviews;
+    private List<Movie> _movies;
+    
+    private string ReviwerName { get; set; }
+    private int Rating { get; set; }
+    private string Headline { get; set; }
+    private int MovieId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _reviews = _repository.GetReviews();
+        _movies = _repository.GetMovies();
+    }
+
+    private async Task AddReview()
+    {
+        if (!String.IsNullOrWhiteSpace(ReviwerName) &&
+            !String.IsNullOrWhiteSpace(Headline))
+        {
+             Review review = new Review()
+            {
+                ReviewerName = ReviwerName,
+                Rating = Rating,
+                Headline = Headline,
+                MovieId = MovieId,
+            };
+            _reviews.Add(_repository.AddReview(review));
+        }
+        
+    }
+
+    private async Task RemoveReview(int reviewId)
+    {
+        var deletedReview = _repository.DeleteReview(reviewId);
+        _reviews = _reviews.Where(r => r.Id!=deletedReview.Id).ToList();
+        StateHasChanged();
+    }
+
+}

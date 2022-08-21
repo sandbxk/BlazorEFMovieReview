@@ -1,0 +1,104 @@
+﻿@page "/movies"
+
+<PageTitle>Movies</PageTitle>
+
+@using Entities
+@inject IRepository _repository
+
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Summary</th>
+            <th>Release Year</th>
+            <th>Box Office (in millions)</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (_movies == null || _movies.Count==0)
+                {
+                    <tr>
+        
+                        <td colspan="5" style="text-align: center; vertical-align: middle;"><h4>There are no movies to display</h4></td>
+                
+                 
+                    </tr>
+                        
+                    
+                  
+                }
+        else
+        {
+            @foreach (var movie in _movies)
+                    {
+                        <tr>
+                            <td>@movie.Title</td>
+                            <td>@movie.Summary</td>
+                            <td>@movie.ReleaseYear</td>
+                            <td>@movie.BoxOfficeSumInMillions</td>
+                            <th><button onclick="@(() => RemoveMovie(movie))">Remove</button></th>
+                        </tr>
+                    }
+        }
+        
+        </tbody>
+        <tbody>
+        <tr>
+                
+                                <td colspan="5" style="text-align: center; vertical-align: middle;"><h4>Add a new movie:</h4></td>
+                        
+                         
+                            </tr>
+        <tr>
+            <td><input placeholder="Movie title" @bind="MovieTitle"/></td>
+            <td><input placeholder="Short summary" @bind="MovieSummary"/></td>
+            <td><input placeholder="Release year" type="number" @bind="ReleaseYear"/></td>
+            <td><input placeholder="Earnings" type="number" @bind="BoxOfficeEarnings"/></td>
+            <td><button onclick="@(() => AddMovie())">Add</button></td>
+        </tr>
+        </tbody>
+    </table>
+
+
+@code {
+    private List<Movie> _movies;
+    
+    private string MovieTitle { get; set; }
+    private string MovieSummary { get; set; }
+    private int ReleaseYear { get; set; }
+    private int BoxOfficeEarnings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _movies = _repository.GetMovies();
+    }
+
+    private async Task RemoveMovie(Movie movie)
+    {
+        Movie deletedMovie = _repository.DeleteMovie(movie.Id);
+        _movies = _movies.Where(m => m.Id != deletedMovie.Id).ToList();
+        StateHasChanged();
+
+    }
+
+    private async Task AddMovie()
+    {
+        if(!String.IsNullOrWhiteSpace(MovieTitle)  && 
+           !String.IsNullOrWhiteSpace(MovieSummary))
+        {
+            Movie movie = new Movie()
+            {
+                Title = MovieTitle,
+                Summary = MovieSummary,
+                ReleaseYear = ReleaseYear,
+                BoxOfficeSumInMillions = BoxOfficeEarnings
+            };
+            _movies.Add(_repository.AddMovie(movie));
+        }
+        
+    }
+
+}
