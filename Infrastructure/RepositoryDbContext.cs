@@ -13,16 +13,27 @@ public class RepositoryDbContext : Microsoft.EntityFrameworkCore.DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        /**
-         * Generate ID.
-         */
+        /*** Generate ID.    */
         modelBuilder.Entity<Movie>()
             .Property(movie => movie.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<Review>()
-            .Property(review => review.Id).ValueGeneratedOnUpdate();
+            .Property(review => review.Id).ValueGeneratedOnAdd();
+
+        // Primary Key
+        modelBuilder.Entity<Movie>().HasKey(movie => movie.Id);
+        // modelBuilder.Entity<Review>().HasKey(review => review.Id);
+
+
+        modelBuilder.Entity<Movie>()
+            .HasMany<Review>(r => r.Reviews)
+            .WithOne(review => review.Movie)
+            .HasForeignKey(review => review.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         
-        
+
+
+
 
 
     }

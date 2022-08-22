@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace Infrastructure;
@@ -13,7 +14,7 @@ public class Repository :  IRepository
 
     public Repository()
     {
-        mockMovieObject =new Movie()
+        mockMovieObject = new Movie()
         {
             Id = 1, Summary = "Bob writes a program ...", Title = "Bob's Movie", ReleaseYear = 2022,
             BoxOfficeSumInMillions = 42
@@ -30,17 +31,26 @@ public class Repository :  IRepository
 
     public List<Review> GetReviews()
     {
-        return new List<Review>() { mockReviewObject };
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            return context.ReviewTable.ToList();
+        }
     }
 
     public List<Movie> GetMovies()
     {
-        return new List<Movie>() { mockMovieObject };
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            return context.MovieTable.ToList();
+        }
     }
 
     public Movie DeleteMovie(int movieId)
     {
-        return new Movie();
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            return context.MovieTable.Remove().Where(movie => movie.Id == movieId);
+        }
     }
 
     public Review DeleteReview(int reviewId)
