@@ -1,6 +1,6 @@
 Workshop week 34: Putting Entity Framework in a practical context
 
-Fork/clone the repository: https://github.com/uldahlalex/blazorefmoviereview
+Fork/clone the repository
 
 To run the program, go to the directory "GUI" (graphical user interface) from the root folder, and do a "dotnet run".
 
