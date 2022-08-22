@@ -41,7 +41,7 @@ public class Repository :  IRepository
     {
         using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
         {
-            return context.MovieTable.ToList();
+            return context.MovieTable.Include(movie => movie.Reviews).ToList();
         }
     }
 
@@ -49,18 +49,31 @@ public class Repository :  IRepository
     {
         using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
         {
-            return context.MovieTable.Remove().Where(movie => movie.Id == movieId);
+            var movie = context.MovieTable.Find(movieId);
+            context.Remove(movie);
+            context.SaveChanges();
+            return movie ?? mockMovieObject;
         }
     }
 
     public Review DeleteReview(int reviewId)
     {
-        return new Review();
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            var r = context.ReviewTable.Find(reviewId);
+            context.Remove(r);
+            context.SaveChanges();
+            return r ?? mockReviewObject;
+        }
     }
 
     public Movie AddMovie(Movie movie)
     {
-        return movie;
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            context.MovieTable.Add(movie);
+            return movie;
+        }
     }
 
     public Review AddReview(Review review)
