@@ -13,6 +13,16 @@ public class RepositoryDbContext : Microsoft.EntityFrameworkCore.DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        /**
+         * Generate ID.
+         */
+        modelBuilder.Entity<Movie>()
+            .Property(movie => movie.Id).ValueGeneratedOnAdd();
+        modelBuilder.Entity<Review>()
+            .Property(review => review.Id).ValueGeneratedOnUpdate();
+        
+        
+        
 
 
     }
