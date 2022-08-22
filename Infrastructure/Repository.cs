@@ -72,13 +72,20 @@ public class Repository :  IRepository
         using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
         {
             context.MovieTable.Add(movie);
+            context.SaveChanges();
             return movie;
         }
     }
 
     public Review AddReview(Review review)
     {
-        review.Movie = new Movie();
-        return review;
+        using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
+        {
+            var m = context.MovieTable.Find(review.MovieId) ?? throw new InvalidOperationException();
+            review.Movie = m;
+            context.ReviewTable.Add(review);
+            context.SaveChanges();
+            return review;
+        }
     }
 }

@@ -30,13 +30,20 @@ public class RepositoryDbContext : Microsoft.EntityFrameworkCore.DbContext
             .HasForeignKey(review => review.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
             */
-
+            
+        
+        modelBuilder.Entity<Review>().HasOne(review => review.Movie).
+            WithMany(movie => movie.Reviews)
+            .HasForeignKey(review => review.MovieId).
+            OnDelete(DeleteBehavior.Cascade);
+/*
         modelBuilder.Entity<Review>()
             .HasOne<Movie>(review => review.Movie)
             .WithMany(movie => movie.Reviews)
             .HasForeignKey(review => review.MovieId);
+            
 
-
+*/
 
 
 
