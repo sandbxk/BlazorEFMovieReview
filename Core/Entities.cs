@@ -7,13 +7,16 @@ namespace Entities;
 public class Review
 {
     public int Id { get; set; }
+    
     [Required(AllowEmptyStrings = false, ErrorMessage = "Headline is required.")]
     public string Headline { get; set; }
-    [Required(ErrorMessage = "Rating is required.")]
+    [Range(1,5, ErrorMessage = "Rating must be between 1 and 5.")]
     public int Rating { get; set; }
+    
     [Required(AllowEmptyStrings = false, ErrorMessage = "Name is required.")]
     public string ReviewerName { get; set; }
-    [Required]
+    
+    [Required(ErrorMessage = "Must select a movie.")]
     public Movie Movie { get; set; }
     public int MovieId { get; set; }
 }
