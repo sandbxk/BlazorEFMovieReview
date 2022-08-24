@@ -23,31 +23,15 @@ public class RepositoryDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Movie>().HasKey(movie => movie.Id);
         modelBuilder.Entity<Review>().HasKey(review => review.Id);
 
-/*
-        modelBuilder.Entity<Movie>()
-            .HasMany<Review>(r => r.Reviews)
-            .WithOne(review => review.Movie)
-            .HasForeignKey(review => review.MovieId)
-            .OnDelete(DeleteBehavior.Cascade);
-            */
-            
-        
         modelBuilder.Entity<Review>().HasOne(review => review.Movie).
             WithMany(movie => movie.Reviews)
             .HasForeignKey(review => review.MovieId).
             OnDelete(DeleteBehavior.Cascade);
-/*
-        modelBuilder.Entity<Review>()
-            .HasOne<Movie>(review => review.Movie)
-            .WithMany(movie => movie.Reviews)
-            .HasForeignKey(review => review.MovieId);
-            
 
-*/
-
-
-
-
+        modelBuilder.Entity<Movie>().HasData(new Movie()
+        {
+            Id = 1, Summary = "seeded", Title = "seeded", ReleaseYear =2022, BoxOfficeSumInMillions = 9999
+        });
     }
 
     public DbSet<Movie> MovieTable { get; set; }

@@ -81,8 +81,9 @@ public class Repository :  IRepository
     {
         using (var context = new RepositoryDbContext(_opts, ServiceLifetime.Scoped))
         {
-            var m = context.MovieTable.Find(review.MovieId) ?? throw new InvalidOperationException();
-            review.Movie = m;
+            review.Movie = context
+                .MovieTable
+                .Find(review.MovieId) ?? throw new InvalidOperationException();
             context.ReviewTable.Add(review);
             context.SaveChanges();
             return review;
